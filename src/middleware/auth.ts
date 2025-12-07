@@ -11,6 +11,7 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
   if (!token) return res.status(401).json({ error: "No token provided" });
   if (!providerToken)
     return res.status(401).json({ error: "Missing Google provider token" });
+  console.log("", providerToken);
   // 1. Verify JWT via Supabase
   const { data, error } = await supabase.auth.getUser(token);
   if (error || !data.user) {
