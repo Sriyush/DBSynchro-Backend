@@ -1,0 +1,1 @@
+ALTER TABLE "sync_configs" ALTER COLUMN "user_table_id" SET NOT NULL;
