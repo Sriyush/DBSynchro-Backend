@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase";
 import { db } from "../lib/db";
 import { users } from "../models/schema";
 import { eq } from "drizzle-orm";
+import { connectionManager } from "../lib/connection-manager";
 
 export async function auth(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.authorization?.split(" ")[1];
@@ -68,6 +69,19 @@ console.log("Token Scopes:", tokenInfo.scope);
         })
         .where(eq(users.id, dbUser.id));
     }
+  }
+
+  // 5. Inject User DB Connection (if configured)
+  if (req.dbUser && req.dbUser.encryptedConnectionString) {
+    try {
+      // Use supabaseId as key since it's a string, dbUser.id is a number
+      req.db = await connectionManager.getConnection(req.dbUser.supabaseId, req.dbUser.encryptedConnectionString);
+    } catch (e) {
+      console.warn(`⚠️ User ${req.dbUser.id} has custom DB but connection failed. Fallback to System DB.`);
+      req.db = db;
+    }
+  } else {
+    req.db = db;
   }
 
   next();

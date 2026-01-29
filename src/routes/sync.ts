@@ -29,7 +29,9 @@ router.post("/create-table", auth, async (req, res) => {
       .map((safe) => `"${safe}" text`)
       .join(",");
 
-    await db.execute(sql`
+    const userDb = req.db || db; // Use user's DB for creating the table
+
+    await userDb.execute(sql`
       CREATE TABLE IF NOT EXISTS ${sql.identifier(tableName)} (
         id serial PRIMARY KEY,
         ${sql.raw(colsSQL)}
@@ -45,13 +47,14 @@ router.post("/create-table", auth, async (req, res) => {
         .map((v) => (v === null ? "NULL" : `'${String(v).replace(/'/g, "''")}'`))
         .join(",");
 
-      await db.execute(sql`
+      await userDb.execute(sql`
         INSERT INTO ${sql.identifier(tableName)}
         (${sql.raw(dbCols)})
         VALUES (${sql.raw(dbVals)});
       `);
     }
 
+    // Always save metadata to System DB
     const [createdTable] = await db.insert(userTables).values({
       userId: req.user!.id,
       tableName,

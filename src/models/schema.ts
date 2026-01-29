@@ -8,6 +8,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   name: text("name"),
   avatar: text("avatar"),
+  encryptedConnectionString: text("encrypted_connection_string"),
   createdAt: timestamp("created_at").defaultNow()
 });
 
@@ -22,7 +23,27 @@ export const userTables = pgTable("user_tables", {
 
   mapping: json("mapping").$type<Record<string, string>>().notNull(),
 
+  lastRowCount: integer("last_row_count"),
+  lastColCount: integer("last_col_count"),
+  firstRowHash: text("first_row_hash"),
+  lastRowHash: text("last_row_hash"),
+
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const master = pgTable("master", {
+  id: serial("id").primaryKey(),
+  gameId: text("game_id"),
+  gameName: text("game_name"),
+  assignedCategory: text("assigned_category"),
+  rawTags: text("raw_tags"),
+});
+
+export const test = pgTable("Test", {
+  id: serial("id").primaryKey(),
+  name: text("name"),
+  company: text("company"),
+  role: text("role"),
 });
 
 // export const syncConfigs = pgTable("sync_configs", {
