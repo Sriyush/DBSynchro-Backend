@@ -22,9 +22,9 @@ export async function readGoogleSheet(token: string, sheetId: string, sheetName:
 
 export async function getSheetNames(accessToken: string, sheetId: string) {
   try {
-    console.log("🔵 getSheetNames() called");
-    console.log("Sheet ID:", sheetId);
-    console.log("Access token:", accessToken?.slice(0, 15) + "...");
+    // console.log("🔵 getSheetNames() called");
+    // console.log("Sheet ID:", sheetId);
+    // console.log("Access token:", accessToken?.slice(0, 15) + "...");
 
     const auth = new google.auth.OAuth2();
     auth.setCredentials({ access_token: accessToken });
@@ -36,7 +36,7 @@ export async function getSheetNames(accessToken: string, sheetId: string) {
       fields: "sheets(properties(title))",
     });
 
-    console.log("Google API Response:", response.data);
+    // console.log("Google API Response:", response.data);
 
     return response.data.sheets?.map((s) => s.properties?.title) || [];
 

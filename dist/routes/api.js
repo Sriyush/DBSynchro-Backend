@@ -278,7 +278,7 @@ router.put("/table/:tableName/row/:id", auth_1.auth, async (req, res) => {
                     searchRow[dbToSheet[dbCol]] = String(val);
                 }
             }
-            console.log("🔍 Searching Sheet for row matching:", searchRow);
+            // console.log("🔍 Searching Sheet for row matching:", searchRow);
             // Prepare "New Data" (Map updates -> Sheet Headers)
             const sheetUpdates = {};
             for (const [dbCol, val] of Object.entries(updates)) {

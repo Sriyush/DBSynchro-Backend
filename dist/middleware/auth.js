@@ -13,7 +13,7 @@ async function auth(req, res, next) {
         return res.status(401).json({ error: "No token provided" });
     if (!providerToken)
         return res.status(401).json({ error: "Missing Google provider token" });
-    console.log("", providerToken);
+    // console.log("", providerToken);
     // 1. Verify JWT via Supabase
     const { data, error } = await supabase_1.supabase.auth.getUser(token);
     if (error || !data.user) {
@@ -25,7 +25,7 @@ async function auth(req, res, next) {
     // console.log("Google Access Token in auth middleware:", req.googleAccessToken);
     const tokenInfo = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${req.googleAccessToken}`)
         .then(r => r.json());
-    console.log("Token Scopes:", tokenInfo.scope);
+    // console.log("Token Scopes:", tokenInfo.scope);
     const fullName = supabaseUser.user_metadata.full_name || null;
     const avatar = supabaseUser.user_metadata.avatar_url || null;
     // 2. Check if user exists

@@ -293,7 +293,7 @@ router.put("/table/:tableName/row/:id", auth, async (req, res) => {
             }
         }
 
-        console.log("🔍 Searching Sheet for row matching:", searchRow);
+        // console.log("🔍 Searching Sheet for row matching:", searchRow);
 
         // Prepare "New Data" (Map updates -> Sheet Headers)
         const sheetUpdates: Record<string, string> = {};

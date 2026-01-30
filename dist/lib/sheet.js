@@ -21,9 +21,9 @@ async function readGoogleSheet(token, sheetId, sheetName) {
 }
 async function getSheetNames(accessToken, sheetId) {
     try {
-        console.log("🔵 getSheetNames() called");
-        console.log("Sheet ID:", sheetId);
-        console.log("Access token:", accessToken?.slice(0, 15) + "...");
+        // console.log("🔵 getSheetNames() called");
+        // console.log("Sheet ID:", sheetId);
+        // console.log("Access token:", accessToken?.slice(0, 15) + "...");
         const auth = new googleapis_1.google.auth.OAuth2();
         auth.setCredentials({ access_token: accessToken });
         const sheets = googleapis_1.google.sheets({ version: "v4", auth });
@@ -31,7 +31,7 @@ async function getSheetNames(accessToken, sheetId) {
             spreadsheetId: sheetId,
             fields: "sheets(properties(title))",
         });
-        console.log("Google API Response:", response.data);
+        // console.log("Google API Response:", response.data);
         return response.data.sheets?.map((s) => s.properties?.title) || [];
     }
     catch (error) {
@@ -128,7 +128,7 @@ newRowData // key=header, value=new_value
                 }
                 if (sheetVal !== dbVal) {
                     // Debug log for mismatch
-                    console.log(`[SYNC FAIL] Row ${i + 2} Mismatch on '${header}': Sheet='${sheetVal}' vs DB='${dbVal}'`);
+                    // console.log(`[SYNC FAIL] Row ${i + 2} Mismatch on '${header}': Sheet='${sheetVal}' vs DB='${dbVal}'`);
                     isMatch = false;
                     break;
                 }
