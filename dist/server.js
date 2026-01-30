@@ -14,8 +14,14 @@ const sync_1 = __importDefault(require("./routes/sync"));
 const app = (0, express_1.default)();
 const PORT = Number(process.env.PORT) || 4000;
 app.use((0, cors_1.default)({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: [
+        "http://localhost:5173",
+        "https://db-synchro-fronted.vercel.app",
+        process.env.FRONTEND_URL || ""
+    ].filter(Boolean),
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "provider-token"]
 }));
 // console.log("🔵 googleStrategy loaded — CLIENT ID:", process.env.GOOGLE_CLIENT_ID);
 app.use(express_1.default.json());
