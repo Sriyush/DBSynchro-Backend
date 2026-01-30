@@ -1,0 +1,81 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.auth = auth;
+const supabase_1 = require("../lib/supabase");
+const db_1 = require("../lib/db");
+const schema_1 = require("../models/schema");
+const drizzle_orm_1 = require("drizzle-orm");
+const connection_manager_1 = require("../lib/connection-manager");
+async function auth(req, res, next) {
+    const token = req.headers.authorization?.split(" ")[1];
+    const providerToken = req.headers["provider-token"];
+    if (!token)
+        return res.status(401).json({ error: "No token provided" });
+    if (!providerToken)
+        return res.status(401).json({ error: "Missing Google provider token" });
+    console.log("", providerToken);
+    // 1. Verify JWT via Supabase
+    const { data, error } = await supabase_1.supabase.auth.getUser(token);
+    if (error || !data.user) {
+        return res.status(401).json({ error: "Invalid token" });
+    }
+    const supabaseUser = data.user;
+    req.user = supabaseUser;
+    req.googleAccessToken = providerToken;
+    // console.log("Google Access Token in auth middleware:", req.googleAccessToken);
+    const tokenInfo = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${req.googleAccessToken}`)
+        .then(r => r.json());
+    console.log("Token Scopes:", tokenInfo.scope);
+    const fullName = supabaseUser.user_metadata.full_name || null;
+    const avatar = supabaseUser.user_metadata.avatar_url || null;
+    // 2. Check if user exists
+    const existing = await db_1.db
+        .select()
+        .from(schema_1.users)
+        .where((0, drizzle_orm_1.eq)(schema_1.users.supabaseId, supabaseUser.id));
+    if (existing.length === 0) {
+        // 3. Create new DB user
+        const [created] = await db_1.db
+            .insert(schema_1.users)
+            .values({
+            supabaseId: supabaseUser.id,
+            email: supabaseUser.email,
+            name: fullName,
+            avatar: avatar,
+        })
+            .returning();
+        req.dbUser = created;
+    }
+    else {
+        const dbUser = existing[0];
+        req.dbUser = dbUser;
+        // 4. Sync name/avatar if changed
+        if (dbUser.email !== supabaseUser.email ||
+            dbUser.name !== fullName ||
+            dbUser.avatar !== avatar) {
+            await db_1.db
+                .update(schema_1.users)
+                .set({
+                email: supabaseUser.email,
+                name: fullName,
+                avatar: avatar,
+            })
+                .where((0, drizzle_orm_1.eq)(schema_1.users.id, dbUser.id));
+        }
+    }
+    // 5. Inject User DB Connection (if configured)
+    if (req.dbUser && req.dbUser.encryptedConnectionString) {
+        try {
+            // Use supabaseId as key since it's a string, dbUser.id is a number
+            req.db = await connection_manager_1.connectionManager.getConnection(req.dbUser.supabaseId, req.dbUser.encryptedConnectionString);
+        }
+        catch (e) {
+            console.warn(`⚠️ User ${req.dbUser.id} has custom DB but connection failed. Fallback to System DB.`);
+            req.db = db_1.db;
+        }
+    }
+    else {
+        req.db = db_1.db;
+    }
+    next();
+}

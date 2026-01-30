@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS='-r dotenv/config' tsx --watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node -r ./paths.js dist/server.js",
     "migrate:generate": "drizzle-kit generate",
     "migrate:push": "drizzle-kit push"
   },

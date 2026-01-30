@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    /* Existing options */
     "target": "es2020",
     "module": "commonjs",
     "rootDir": "./src",
@@ -9,21 +8,13 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    
-    /* NEW: Add "node" to the "types" array */
     "types": [
-      "node" 
-      // If you use Jest, you might have "jest" here too, etc.
+      "node"
     ],
-    
-    /* Recommended: Module resolution for path aliases like "@/routes/auth" */
     "baseUrl": "src",
     "paths": {
       "@/*": ["*"]
     },
-    
-    /* Additional Fixes for Your Code */
-    // Ensure "resolveJsonModule" is true if you import JSON files
     "resolveJsonModule": true
   },
   "include": ["src/**/*"],
