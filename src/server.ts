@@ -16,6 +16,7 @@ app.use(
         origin: [
             "http://localhost:5173",
             "https://db-synchro-fronted.vercel.app",
+            "https://dbsynchro.sriyush.fun",
             process.env.FRONTEND_URL || ""
         ].filter(Boolean) as string[],
         credentials: true,
